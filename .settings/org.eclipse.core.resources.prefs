@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/resources=UTF-8
+encoding//src/main/webapp/WEB-INF/views/admin/adminForm.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/admin/menu.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/admin/requestForm.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/admin/storeListForm.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/login/seller.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/seller/product.jsp=UTF-8
+encoding/<project>=UTF-8

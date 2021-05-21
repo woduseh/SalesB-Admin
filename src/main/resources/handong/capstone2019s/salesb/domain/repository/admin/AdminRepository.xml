@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="handong.capstone2019s.salesb.domain.repository.admin.AdminRepository">
+	<!-- ADMIN -->
+	<resultMap id="adminResultMap" type="Admin">
+		<id property="adminCode" column="admin_code" />
+		<result property="adminName" column="admin_name" />
+		<result property="adminPass" column="admin_pass" />
+		<result property="adminMail" column="admin_mail" />
+		<result property="adminTel" column="admin_tel" />
+		<result property="adminAuthority" column="admin_authority" />
+	</resultMap>
+
+	<select id="findByAdminId" parameterType="string"
+		resultMap="adminResultMap">
+		SELECT
+		admin_code,
+		admin_name,
+		admin_pass,
+		admin_mail,
+		admin_tel,
+		admin_authority
+		FROM
+		admin
+		WHERE
+		admin_code = #{adminCode}
+	</select>
+
+	<select id="findByAdminName" parameterType="string"
+		resultMap="adminResultMap">
+		SELECT
+		admin_code,
+		admin_name,
+		admin_pass,
+		admin_mail,
+		admin_tel,
+		admin_authority
+		FROM
+		admin
+		WHERE
+		admin_name = #{adminName}
+	</select>
+
+	<select id="nameOverlapChk" parameterType="string"
+		resultType="int">
+		SELECT
+		count(*)
+		FROM
+		admin
+		WHERE
+		admin_name = #{adminName}
+	</select>
+
+	<insert id="insertadmin" parameterType="Admin">
+		<selectKey keyProperty="adminCode" resultType="string"
+			order="BEFORE">
+			SELECT
+			TO_CHAR(nextval('ADMIN_CODE_SEQ'),'FM00000000') AS
+			adminCode
+		</selectKey>
+		INSERT INTO
+		admin
+		(
+		admin_code,
+		admin_name,
+		admin_pass,
+		admin_mail,
+		admin_tel
+		admin_authority
+		)
+		VALUES
+		(
+		#{adminCode},
+		#{adminName},
+		#{adminPass},
+		#{adminMail},
+		#{adminTel},
+		"ROLE_ADMIN"
+		)
+	</insert>
+
+	<select id="selectAdmin" parameterType="Admin"
+		resultMap="adminResultMap">
+		SELECT
+		admin_code,
+		admin_name,
+		admin_pass,
+		admin_mail,
+		admin_tel,
+		admin_authority
+		FROM
+		admin
+	</select>
+
+	<select id="selectAdminbyAdminCode" parameterType="Admin"
+		resultMap="adminResultMap">
+		SELECT
+		admin_code,
+		admin_name,
+		admin_pass,
+		admin_mail,
+		admin_tel,
+		admin_authority
+		FROM
+		admin
+		WHERE
+		admin_code = #{adminCode}
+	</select>
+
+	<select id="countAdmin" parameterType="Admin" resultType="_long">
+		SELECT
+		COUNT(*)
+		FROM
+		admin
+	</select>
+
+
+	<!-- Request to ADMIN -->
+	<resultMap id="requestToAdminResultMap" type="Request">
+		<id property="seq" column="seq" />
+		<result property="client" column="client" />
+		<result property="thePersonInCharge"
+			column="the_person_in_charge" />
+		<result property="requestName" column="request_name" />
+		<result property="requestContents" column="request_contents" />
+		<result property="addTime" column="add_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="deleteTime" column="delete_time" />
+	</resultMap>
+
+	<select id="selectRequestbyAdminName" parameterType="Request"
+		resultMap="requestToAdminResultMap">
+		SELECT
+		seq,
+		client,
+		the_person_in_charge,
+		request_name,
+		request_contents,
+		add_time,
+		update_time
+		FROM
+		request
+		WHERE
+		the_person_in_charge =
+		#{thePersonInCharge}
+		<if test="requestform.searchOptions == 0">
+			AND
+			request_name ILIKE '%' ||
+			#{requestform.searchKeywords}
+			|| '%'
+		</if>
+		<if test="requestform.searchOptions == 1">
+			AND
+			request_contents ILIKE '%' ||
+			#{requestform.searchKeywords} || '%'
+		</if>
+		<if test="requestform.searchOptions == 2">
+			AND
+			client ILIKE '%' ||
+			#{requestform.searchKeywords} || '%'
+		</if>
+		<if test="requestform.searchOptions == 3">
+			AND
+			request_name || request_contents ILIKE '%' ||
+			#{requestform.searchKeywords} || '%'
+		</if>
+	</select>
+
+	<select id="selectRequestbySeq" parameterType="Request"
+		resultMap="requestToAdminResultMap">
+		SELECT
+		seq,
+		client,
+		the_person_in_charge,
+		request_name,
+		request_contents,
+		add_time,
+		update_time
+		FROM
+		request
+		WHERE
+		seq =
+		#{seq}
+	</select>
+
+	<select id="selectLimitedRequestbyAdminName"
+		parameterType="Request" resultMap="requestToAdminResultMap">
+		SELECT
+		seq,
+		client,
+		the_person_in_charge,
+		request_name,
+		request_contents,
+		add_time,
+		update_time
+		FROM
+		request
+		WHERE
+		the_person_in_charge =
+		#{thePersonInCharge}
+		<if test="requestform.searchOptions == '제목'">
+			AND
+			request_name ILIKE '%' ||
+			#{requestform.searchKeywords}
+			|| '%'
+		</if>
+		<if test="requestform.searchOptions == '내용'">
+			AND
+			request_contents ILIKE '%' ||
+			#{requestform.searchKeywords} || '%'
+		</if>
+		<if test="requestform.searchOptions == '작성자'">
+			AND
+			client ILIKE '%' ||
+			#{requestform.searchKeywords} || '%'
+		</if>
+		<if test="requestform.searchOptions == '제목 + 내용'">
+			AND
+			request_name || request_contents ILIKE '%' ||
+			#{requestform.searchKeywords} || '%'
+		</if>
+		ORDER BY
+		update_time
+		LIMIT
+		3
+	</select>
+
+
+	<select id="countRequestbyAdminName" parameterType="Request"
+		resultType="_long">
+		SELECT
+		COUNT(*)
+		FROM
+		request
+		WHERE
+		the_person_in_charge =
+		#{thePersonInCharge}
+		<if test="requestform.searchOptions == 0">
+			AND
+			request_name ILIKE '%' ||
+			#{requestform.searchKeywords}
+			|| '%'
+		</if>
+		<if test="requestform.searchOptions == 1">
+			AND
+			request_contents ILIKE '%' ||
+			#{requestform.searchKeywords} || '%'
+		</if>
+		<if test="requestform.searchOptions == 2">
+			AND
+			client ILIKE '%' ||
+			#{requestform.searchKeywords} || '%'
+		</if>
+		<if test="requestform.searchOptions == 3">
+			AND
+			request_name || request_contents ILIKE '%' ||
+			#{requestform.searchKeywords} || '%'
+		</if>
+	</select>
+
+	<!-- Admin StoreList -->
+	<resultMap id="storeListResultMap" type="Store">
+		<id property="storeCode" column="store_code" />
+		<result property="storeName" column="store_name" />
+		<result property="isExpired" column="is_expired" />
+		<result property="ver" column="ver" />
+		<result property="addTime" column="add_Time" />
+		<result property="updateTime" column="update_Time" />
+		<result property="deleteTime" column="delete_Time" />
+		<result property="seller.sellerName" column="seller_name" />
+		<result property="seller.sellerMail" column="seller_mail" />
+		<result property="seller.sellerVersion" column="seller_version" />
+		<result property="seller.sellerTel" column="seller_tel" />
+		<result property="seller.sellerPass" column="seller_pass" />
+		<result property="seller.sellerManageAdmin"
+			column="seller_manage_admin" />
+	</resultMap>
+
+	<select id="selectStoreListbyAdminName" parameterType="Store"
+		resultMap="storeListResultMap">
+		SELECT
+		*
+		FROM
+		store
+		JOIN seller
+		ON seller.seller_code = store.store_code
+		WHERE
+		seller_manage_admin = #{sellerManageAdmin}
+		<if test="storeform.searchKeywords != null">
+			AND
+			store_name ILIKE '%' || #{storeform.searchKeywords} ||
+			'%'
+		</if>
+	</select>
+
+	<select id="countStoreListbyAdminName" parameterType="Store"
+		resultType="_long">
+		SELECT
+		COUNT(*)
+		FROM
+		store
+		JOIN seller
+		ON seller.seller_code =
+		store.store_code
+		WHERE
+		seller_manage_admin =
+		#{sellerManageAdmin}
+		<if test="storeform.searchKeywords != null">
+			AND
+			store_name ILIKE '%' || #{storeform.searchKeywords} ||
+			'%'
+		</if>
+	</select>
+
+	<update id="updateStoreExpiredTrue" parameterType="string">
+		UPDATE
+		store
+		SET
+		is_expired = 1
+		WHERE
+		store_code = #{storeCode}
+	</update>
+
+	<update id="updateStoreExpiredFalse" parameterType="string">
+		UPDATE
+		store
+		SET
+		is_expired = 0
+		WHERE
+		store_code = #{storeCode}
+	</update>
+
+</mapper>
